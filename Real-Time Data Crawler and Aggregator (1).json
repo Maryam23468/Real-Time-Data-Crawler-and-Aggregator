@@ -1,0 +1,192 @@
+{
+  "name": "Real-Time Data Crawler and Aggregator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "52fc2326-a528-4b7c-aa83-479e48a4929d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://remoteok.com/api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "n8n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        0
+      ],
+      "id": "c3e0a89f-7d57-4651-af1b-eef483cb4c2b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define keywords you care about\nconst keywords = [\"marketing\", \"fintech\", \"growth\", \"engineering\", \"analytics\"];\n\nreturn items\n  // Remove any metadata object\n  .filter(item => item.json.position && item.json.company)\n  // Keep only jobs that match keywords in tags\n  .filter(item => {\n    const tags = item.json.tags || [];\n    return tags.some(tag => keywords.includes(tag.toLowerCase()));\n  });\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0c8fbfc2-e842-49b1-b0cb-74f458f9e675",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1j-gBSh2qtLhd3TB9xSAwMtjT1aC45ssUQt-idWIi_kQ",
+          "mode": "list",
+          "cachedResultName": "Remote Dev Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1j-gBSh2qtLhd3TB9xSAwMtjT1aC45ssUQt-idWIi_kQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1j-gBSh2qtLhd3TB9xSAwMtjT1aC45ssUQt-idWIi_kQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Position": "={{ $json.position }}",
+            "Company ": "={{ $json.company }}",
+            "Location ": "={{ $json.location }}",
+            "URL": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location ",
+              "displayName": "Location ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        432,
+        0
+      ],
+      "id": "97ef4439-6575-4cf6-9e57-e78dcef169fb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "h3g3r0p8IQBNlEbZ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "26d94341-e4a0-446e-8fab-8489fdd39622",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "17def896bb5cda64f462f6a10d9e0c1abe06e5ba21af0af4d2ce3a218029932e"
+  },
+  "id": "SbbHZ1ShWCAygjPY",
+  "tags": []
+}
